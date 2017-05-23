@@ -1,2 +1,2 @@
 # backend
-Backend of anti troll system
+Backend pre anti troll system
