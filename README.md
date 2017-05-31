@@ -1,6 +1,6 @@
-## Service
+## Bot
 
-Servis hlavnej logiky Anti-troll systému.
+Automatizovany servis (bot) hlavnej logiky Anti-troll systému.
 
 ## Ako spustiť projekt u seba?
 
@@ -12,7 +12,7 @@ Servis hlavnej logiky Anti-troll systému.
 
 ### Spustenie
 
-- otvor si adresár v terminály/príkazovom riadku `cd anti-troll-service`
+- otvor si adresár v terminály/príkazovom riadku `cd anti-troll-bot`
 - spusti aplikáciu `npm start`
 
 ## Verejné dokumenty k projektu
