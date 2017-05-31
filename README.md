@@ -1,6 +1,6 @@
-# Backend
+## Service
 
-Backend pre Anti-troll system.
+Servis hlavnej logiky Anti-troll systému.
 
 ## Ako spustiť projekt u seba?
 
