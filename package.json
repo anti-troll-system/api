@@ -1,0 +1,29 @@
+{
+  "name": "anti-troll-system-bot",
+  "version": "0.1.0",
+  "description": "bot for anti troll system",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anti-troll-system/bot.git",
+    "mongo:dev": "mongod --dbpath ./db"
+  },
+  "keywords": [
+    "anti",
+    "troll",
+    "system",
+    "bot"
+  ],
+  "author": "luckylooke@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/anti-troll-system/bot/issues"
+  },
+  "homepage": "https://github.com/anti-troll-system/bot#readme",
+  "dependencies": {
+    "mongodb": "^2.2.27"
+  }
+}
