@@ -12,8 +12,8 @@ Servis hlavnej logiky Anti-troll systému.
 
 ### Spustenie
 
-- otvor si adresár v terminály/príkazovom riadku `cd anti-troll-backend`
-- spusti aplikáciu `node debug.js`
+- otvor si adresár v terminály/príkazovom riadku `cd anti-troll-service`
+- spusti aplikáciu `npm start`
 
 ## Verejné dokumenty k projektu
 
@@ -24,6 +24,5 @@ Servis hlavnej logiky Anti-troll systému.
 
 ## To-do
 
-- [ ] potrebujeme doménu
-- [ ] SMTP mail sender
-- [ ] favicon
+- [ ] db vytvorit tabulky a relacie
+- [ ] spracovanie dat z fbk a ulozenie do db
