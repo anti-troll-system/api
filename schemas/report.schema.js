@@ -1,4 +1,5 @@
 var mongoose = require( 'mongoose' );
+var ObjectId = mongoose.Schema.ObjectId;
 
 module.exports = mongoose.Schema( {
 	time: { type: Date, default: Date.now },
