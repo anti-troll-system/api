@@ -1,4 +1,5 @@
 var mongoose = require( 'mongoose' );
+var co = require( 'co' );
 var env = require( __dirname + '/env' );
 var models = {
 	post: mongoose.model( 'post', require( __dirname + '/schemas/post.schema' ) ),
@@ -7,6 +8,7 @@ var models = {
 	report: mongoose.model( 'report', require( __dirname + '/schemas/report.schema' ) ),
 };
 
+mongoose.Promise = global.Promise;
 mongoose.connect( env.mongoUrl );
 
 // Connection URL 
@@ -22,18 +24,27 @@ var layer = {
 		return model.save( cb );
 	},
 	read: function ( model, query, cb ) {
-		return models[ model ].insert( data, cb );
+
+		// const cursor = models[ model ].find(query).cursor();
+		// cursor.on('data', cb);
+
+		// http://thecodebarbarian.com/cursors-in-mongoose-45
+		co( function*() {
+			const cursor = models[ model ].find( query ).cursor();
+			for ( let doc = yield cursor.next(); doc != null; doc = yield cursor.next() ) {
+				cb( doc );
+			}
+		} );
+		return this;
 	},
 	close: function () {
 		db.close();
 	},
-	open: function () {
-	},
+	onConnection: function ( fn ) {
+		db.once( 'open', fn );
+	}
 };
 
 db.on( 'error', console.error.bind( console, 'connection error:' ) );
-db.once( 'open', function () {
-	layer.open();
-} );
 
 module.exports = layer;

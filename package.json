@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/anti-troll-system/bot#readme",
   "dependencies": {
+    "co": "^4.6.0",
     "mongoose": "^4.10.4"
   }
 }
