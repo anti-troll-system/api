@@ -21,20 +21,15 @@ module.exports = function ( data ) {
 	d.author_id = data.from.id
 	d.confirm_by = data.admin_creator
 	d.links = getLinksFromText( data.message )
-	// d.comments = [ ObjectId ]
-	// d.reactions = [ ObjectId ]
-	d.link = data.link
-	d.link_name = data.link_name
-	d.link_caption = data.link_caption
-	d.link_description = data.link_description
-	// d.link_id = ObjectId
-	// d.tags = [ ObjectId ]
-	// d.with_tags = [ ObjectId ]
-	// d.target_profiles = [ ObjectId ]
+	d.comments = processComments( data.comments )
+	// d.reactions = data.reactions // edge /reactions
+	// d.link_id = data.link
+	// d.tags = data.message_tags
+	// d.with_tags = data.with_tags
+	// d.target_profiles = data.to
 	d.story = data.story
-	d.shares = data.shares || 0
+	d.shares = data.shares && data.shares.count || 0
 	d.place_id = data.place
-
 
 	db.upsert( 'post', '_id', d ).then(function () {
 		console.log('finito', arguments)
@@ -44,4 +39,17 @@ module.exports = function ( data ) {
 
 function getLinksFromText( text ) {
 	return text.match( urlRegex )
+}
+function processComments( comments ) {
+	if ( !comments) return []
+
+	comments = comments.data
+	let len = comments.length
+	let result = [];
+
+	for(let i = 0; i< len; i++){
+		result.push( comments[i].id )
+	}
+
+	return result
 }

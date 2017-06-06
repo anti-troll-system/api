@@ -109,7 +109,8 @@ function getPostData( profileId, postId, callback ) {
 	FB.api(
 		'/' + profileId + '_' + postId,
 		'GET',
-		{ fields: "id,message,created_time,from,comments{id,created_time,message,from,comments{id,created_time,message,from,comments}}" },
+		// { fields: "id, type, parent_id, created_time, from, admin_creator, message, link{name, caption, description}, message_tags, with_tags, to, story, shares, place, comments{id, created_time, message, from, comments{id, created_time, message, from, comments}}" },
+		{ fields: "id,type,parent_id,created_time,from,admin_creator,message,link{name,caption,description},message_tags,with_tags,to,story,shares,place,comments{id}"},
 		// function () {
 		// 	console.log( 'API/' + profileId + '_' + postId, arguments )
 		// }
