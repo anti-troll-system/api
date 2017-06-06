@@ -1,5 +1,5 @@
-var db = require( __dirname + '/dbDriver' );
-var report = require( __dirname + '/schemas/report.schema' );
+let db = require( __dirname + '/dbDriver' );
+let report = require( __dirname + '/schemas/report.schema' );
 
 
 db.onConnection(function () {
@@ -9,5 +9,6 @@ db.onConnection(function () {
 		ip_address: '123.124.125.126'
 	}, function () {
 		console.log( 'done', arguments );
+		process.exit();
 	} )
 });

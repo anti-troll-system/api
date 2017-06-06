@@ -1,7 +1,8 @@
-var mongoose = require( 'mongoose' );
-var ObjectId = mongoose.Schema.ObjectId;
+let mongoose = require( 'mongoose' );
+let ObjectId = mongoose.Schema.ObjectId;
 
 module.exports = mongoose.Schema( {
+	fbk_id: String,
 	first_name: String,
 	last_name: String,
 	reports: [ ObjectId ],

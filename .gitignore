@@ -56,3 +56,4 @@ typings/
 
 tmp/*
 /db/
+/secrets.js
