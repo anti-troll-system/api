@@ -2,6 +2,7 @@ let mongoose = require( 'mongoose' );
 let co = require( 'co' );
 let env = require( __dirname + '/../env' );
 let models = {
+	link: mongoose.model( 'link', require( __dirname + '/schemas/link.schema' ) ),
 	post: mongoose.model( 'post', require( __dirname + '/schemas/post.schema' ) ),
 	comment: mongoose.model( 'comment', require( __dirname + '/schemas/comment.schema' ) ),
 	profile: mongoose.model( 'profile', require( __dirname + '/schemas/profile.schema' ) ),
@@ -16,15 +17,15 @@ let db = mongoose.connection;
 let layer = {
 	upsert: function ( model, key, data ) {
 
-		return models[ model ].update( { [key]: data[key] }, data, { upsert: true, setDefaultsOnInsert: true } );
+		return models[ model ].findOneAndUpdate( { [key]: data[ key ] }, data, { upsert: true, setDefaultsOnInsert: true } );
 	},
 	upsertMany: function ( model, key, data ) {
 		// https://stackoverflow.com/questions/25285232/bulk-upsert-in-mongodb-using-mongoose
 		let l = data.length;
 		model = models[ model ];  // string to object
 
-		for (let i = 0; i<l; i++){
-			model.update( { [key]: data[i][key] }, data[i], { upsert: true, setDefaultsOnInsert: true } );
+		for ( let i = 0; i < l; i++ ) {
+			model.update( { [key]: data[ i ][ key ] }, data[ i ], { upsert: true, setDefaultsOnInsert: true } );
 		}
 
 		return this;
@@ -34,7 +35,15 @@ let layer = {
 		model = new models[ model ]( data );
 		return model.save( cb );
 	},
-	read: function ( model, query, cb ) {
+	read: function ( model, query ) {
+
+		return models[ model ].find( query );
+	},
+	readOne: function ( model, query ) {
+
+		return models[ model ].findOne( query );
+	},
+	readMany: function ( model, query, cb ) {
 
 		// const cursor = models[ model ].find(query).cursor();
 		// cursor.on('data', cb);
@@ -47,6 +56,12 @@ let layer = {
 			}
 		} );
 		return this;
+	},
+	exist: function ( model, key, val ) {
+		return models[ model ].count( { [key]: val } )
+			.then( function ( err, count ) {
+				return count > 0
+			} );
 	},
 	close: function () {
 		db.close();

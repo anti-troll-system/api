@@ -1,16 +1,17 @@
 let db = require( __dirname + '/dbDriver' )
-
-// https://stackoverflow.com/a/9284473/861615
-// let urlRegex = /(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,}))\.?)(?::\d{2,5})?(?:[/?#]\S*)?/gi
-
-// http://blog.mattheworiordan.com/post/13174566389/url-regular-expression-for-links-with-or-without
-let urlRegex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=+$,\w]+@)?[A-Za-z0-9.\-]+|(?:www\.|[\-;:&=+$,\w]+@)[A-Za-z0-9.\-]+)((?:\/[+~%\/.\w\-_]*)?\??(?:[\-+=&;%@.\w_]*)#?(?:[.!\/\\\w]*))?)/gi
+let utils = require( __dirname + '/utils' )
+let processLinks = require( __dirname + '/procLinks' )
+// let processProfiles = require( __dirname + '/procProfiles' )
 
 module.exports = function ( data ) {
 
-	console.log('procPost', data)
+	console.log( 'procPost', data )
 
 	let d = {}
+	let profiles = [
+		data.from.id,
+		data.admin_creator,
+	]
 
 	d._id = data.id
 	d.type = data.type
@@ -20,8 +21,6 @@ module.exports = function ( data ) {
 	d.time_processed = Date.now()
 	d.author_id = data.from.id
 	d.confirm_by = data.admin_creator
-	d.links = getLinksFromText( data.message )
-	d.comments = processComments( data.comments )
 	// d.reactions = data.reactions // edge /reactions
 	// d.link_id = data.link
 	// d.tags = data.message_tags
@@ -31,25 +30,22 @@ module.exports = function ( data ) {
 	d.shares = data.shares && data.shares.count || 0
 	d.place_id = data.place
 
-	db.upsert( 'post', '_id', d ).then(function () {
-		console.log('finito', arguments)
-		process.exit()
-	})
-}
+	Promise.all( [
 
-function getLinksFromText( text ) {
-	return text.match( urlRegex )
-}
-function processComments( comments ) {
-	if ( !comments) return []
+		processLinks( utils.getLinksFromText( data.message ) )
+		// processProfiles(profiles)
 
-	comments = comments.data
-	let len = comments.length
-	let result = [];
+	] ).then( function ( results ) {
 
-	for(let i = 0; i< len; i++){
-		result.push( comments[i].id )
-	}
+		let linkIds = results[0]
 
-	return result
+		if ( linkIds )
+			d.links = linkIds;
+
+		db.upsert( 'post', '_id', d ).then( function () {
+			console.log( 'finito', arguments )
+			process.exit()
+		} )
+	} )
+
 }

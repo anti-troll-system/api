@@ -1,3 +1,5 @@
+"use strict";
+
 let secrets = require( __dirname + '/../secrets' )
 let FB = require( 'fb' )
 let async = require( 'neo-async' )
@@ -7,113 +9,119 @@ let processPost = require( __dirname + '/procPost' )
 
 FB.setAccessToken( secrets.access_token )
 
-module.exports = function ( report ) {
+module.exports = function ( reportData ) {
+
+	return new Promise( function ( resolve, reject ) {
+
+		let parsedLink = parseLink( reportData.link )
+		console.log( 'parsedLink', parsedLink )
+
+		if ( parsedLink ) { // successfully parsed
+
+			let profileName = parsedLink[ 1 ]
+			let postId = parsedLink[ 2 ]
+			let commentId = parsedLink[ 4 ]
+
+			getIdFromName( profileName )
+				.then( function ( res ) {
+					return getPostData( res.id, postId )
+				} )
+				.then( processPost )
+				.then( resolve )
+
+			// if ( commentId )
+			// 	getCommentData( postId, commentId )
+			// 		.then()
+		}
+		else {
+			reject( 'Link parsing failed: ' + reportData.link )
+		}
+	})
+}
+
+function parseLink( link ) {
 
 	/*
 	 * parsedLink[ 1 ] = profile (page,user...) name where post is situated
 	 * parsedLink[ 2 ] = postId
-	 * parsedLink[ 3 ] = NO DATA = optional group
+	 * parsedLink[ 3 ] = NO DATA ( helper )
 	 * parsedLink[ 4 ] = commentId
 	 * */
 
-	let userInput = report.link
-	let parsedLink = userInput.match( /www\.facebook\.com\/([\w\-.]*)\/.*\/([0-9]*)\/(\?.*comment_id=([0-9]*))?/ )
-
-	console.log( 'parsedLink', parsedLink )
-	// sme.sk 38050018641
-	// vjednotejesila.sk 1661484914179075
-	// OSEL.cz 147605783965
-	// ctiborlaky 354128978096002
-	// photo post 1661484914179075_1798035663857332
-	// photo sharing post 1661484914179075_1806727202988178
-	// link sharing post 1661484914179075_1794648724196026
-	// link sharing post osel 147605783965_10155373835458966
-	// video post 38050018641_10155304706238642
-	// comment 1798035663857332_1800640410263524
-	// subcomment 1798035663857332_1802279196766312
-
-	// comment 1798035663857332_1800640410263524/?fields=attachment <-- medium pripojene ku komentu
-	// 1661484914179075_1798035663857332/attachments <-- media pripojene k postu
-
-	if ( parsedLink ) {
-
-		let profileName = parsedLink[ 1 ]
-		let postId = parsedLink[ 2 ]
-		let commentId = parsedLink[ 4 ]
-
-		async.series( [
-
-			getIdFromName.bind( null, profileName )
-
-		], function ( res ) {
-
-			if ( !res || res.error ) {
-				console.log( !res ? 'error occurred' : res.error )
-				return
-			}
-
-			let profileId = res.id
-
-			console.log( 'profileId', profileId )
-
-			getPostData( profileId, postId, function ( res ) {
-				if ( !res || res.error ) {
-					console.log( !res ? 'error occurred' : res.error );
-					return;
-				}
-
-				processPost( res )
-			} )
-
-			// getCommentData( postId, commentId, function ( res ) {
-			// 	if ( !res || res.error ) {
-			// 		console.log( !res ? 'error occurred' : res.error );
-			// 		return;
-			// 	}
-			// } )
-		} )
-	}
-	else {
-		console.log( 'Link parsing failed', report.link )
-		process.exit( 1 )
-	}
+	return link.match( /www\.facebook\.com\/([\w\-.]*)\/.*\/([0-9]*)\/(\?.*comment_id=([0-9]*))?/ )
 }
 
-function getIdFromName( profileName, callback ) {
+function getIdFromName( profileName ) {
 
-	FB.api(
-		'/' + profileName,
-		'GET',
-		{ fields: "id" },
-		callback
-	)
-}
-
-function getCommentData( postId, commentId, callback ) {
-
-	if ( postId )
+	return new Promise( function ( resolve, reject ) {
 		FB.api(
-			'/' + postId + '_' + commentId,
+			'/' + profileName,
 			'GET',
-			{ fields: "id, message, from" },
-			callback
+			{ fields: "id" },
+			function ( res ) {
+				if ( res.error )
+					reject( res.error )
+				else
+					resolve( res )
+			}
 		)
-	else
-		callback( false )
+	} )
 }
 
 function getPostData( profileId, postId, callback ) {
 
-	console.log( profileId + '_' + postId );
+	console.log( 'geting post id: ', profileId + '_' + postId );
 
-	FB.api(
-		'/' + profileId + '_' + postId,
-		'GET',
-		// { fields: "id, type, parent_id, created_time, from, admin_creator, message, link{name, caption, description}, message_tags, with_tags, to, story, shares, place, comments{id, created_time, message, from, comments{id, created_time, message, from, comments}}" },
-		{ fields: "id,type,parent_id,created_time,from,admin_creator,message,link{name,caption,description},message_tags,with_tags,to,story,shares,place,comments{id}"},
-		// function () {
-		// 	console.log( 'API/' + profileId + '_' + postId, arguments )
-		// }
-		callback
-	)
+	return new Promise( function ( resolve, reject ) {
+		FB.api(
+			'/' + profileId + '_' + postId,
+			'GET',
+			// { fields: "id, type, parent_id, created_time, from, admin_creator, message, link{name, caption, description}, message_tags, with_tags, to, story, shares, place, comments{id, created_time, message, from, comments{id, created_time, message, from, comments}}" },
+			{ fields: "id,type,parent_id,created_time,from,admin_creator,message,link{name,caption,description},message_tags,with_tags,to,story,shares,place" },
+			// function () {
+			// 	console.log( 'API/' + profileId + '_' + postId, arguments )
+			// }
+			function ( res ) {
+				if ( res.error )
+					reject( res.error )
+				else
+					resolve( res )
+			}
+		)
+	} )
+
 }
+
+function getCommentData( postId, commentId, callback ) {
+
+	return new Promise( function ( resolve, reject ) {
+		FB.api(
+			'/' + postId + '_' + commentId,
+			'GET',
+			{ fields: "id, message, from" },
+			function ( res ) {
+				if ( res.error )
+					reject( res.error )
+				else
+					resolve( res )
+			}
+		)
+	} )
+}
+
+// notes:
+
+// sme.sk 38050018641
+// vjednotejesila.sk 1661484914179075
+// OSEL.cz 147605783965
+// ctiborlaky 354128978096002
+// photo post 1661484914179075_1798035663857332
+// photo sharing post 1661484914179075_1806727202988178
+// link sharing post 1661484914179075_1794648724196026
+// link sharing post osel 147605783965_10155373835458966
+// video post 38050018641_10155304706238642
+// comment 1798035663857332_1800640410263524
+// subcomment 1798035663857332_1802279196766312
+
+// comment 1798035663857332_1800640410263524/?fields=attachment <-- medium pripojene ku komentu
+// 1661484914179075_1798035663857332/attachments <-- media pripojene k postu
