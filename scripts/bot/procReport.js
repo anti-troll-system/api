@@ -1,6 +1,6 @@
 "use strict";
 
-let secrets = require( __dirname + '/../secrets' )
+let secrets = require( __dirname + '/../../secrets' )
 let FB = require( 'fb' )
 let async = require( 'neo-async' )
 

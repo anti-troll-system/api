@@ -1,6 +1,6 @@
-## Bot
+## API
 
-Automatizovany servis (bot) hlavnej logiky Anti-troll systému.
+API Anti-troll systému. A botscripty obsluhujúce logiku spracovania dát a ich obnovy.
 
 ## Ako spustiť projekt u seba?
 
@@ -12,7 +12,7 @@ Automatizovany servis (bot) hlavnej logiky Anti-troll systému.
 
 ### Spustenie
 
-- otvor si adresár v terminály/príkazovom riadku `cd anti-troll-bot`
+- otvor si adresár v terminály/príkazovom riadku `cd anti-troll-api`
 - spusti aplikáciu `npm start`
 
 ## Verejné dokumenty k projektu
@@ -24,5 +24,5 @@ Automatizovany servis (bot) hlavnej logiky Anti-troll systému.
 
 ## To-do
 
-- [ ] db vytvorit tabulky a relacie
+- [x] db vytvorit tabulky a relacie
 - [ ] spracovanie dat z fbk a ulozenie do db

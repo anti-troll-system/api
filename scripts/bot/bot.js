@@ -1,6 +1,6 @@
 "use strict"
 
-let db = require( __dirname + '/dbDriver' )
+let db = require( __dirname + '/../dbDriver' )
 let processReport = require( __dirname + '/procReport' )
 
 db.onConnection( function () {

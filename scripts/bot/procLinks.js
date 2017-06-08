@@ -1,7 +1,7 @@
 "use strict"
 
 let async = require( 'neo-async' )
-let db = require( __dirname + '/dbDriver' )
+let db = require( __dirname + '/../dbDriver' )
 
 let iterator = function ( link, done ) {
 

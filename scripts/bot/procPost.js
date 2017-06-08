@@ -1,4 +1,4 @@
-let db = require( __dirname + '/dbDriver' )
+let db = require( __dirname + '/../dbDriver' )
 let utils = require( __dirname + '/utils' )
 let processLinks = require( __dirname + '/procLinks' )
 let processProfiles = require( __dirname + '/procProfiles' )

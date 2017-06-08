@@ -1,4 +1,4 @@
-let db = require( __dirname + '/dbDriver' )
+let db = require( __dirname + '/../dbDriver' )
 let utils = require( __dirname + '/utils' )
 
 module.exports = function ( postId ) {
