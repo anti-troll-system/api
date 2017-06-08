@@ -11,32 +11,31 @@ FB.setAccessToken( secrets.access_token )
 
 module.exports = function ( reportData ) {
 
-	return new Promise( function ( resolve, reject ) {
+	let parsedLink = parseLink( reportData.link )
+	// console.log( 'parsedLink', parsedLink )
 
-		let parsedLink = parseLink( reportData.link )
-		console.log( 'parsedLink', parsedLink )
+	if ( parsedLink ) { // successfully parsed
 
-		if ( parsedLink ) { // successfully parsed
+		let profileName = parsedLink[ 1 ]
+		let postId = parsedLink[ 2 ]
+		let commentId = parsedLink[ 4 ]
 
-			let profileName = parsedLink[ 1 ]
-			let postId = parsedLink[ 2 ]
-			let commentId = parsedLink[ 4 ]
+		return getIdFromName( profileName )
+			.then( function ( res ) {
+				return getPostData( res.id, postId )
+			} )
+			.then( processPost )
+			.then( function () {
+				console.log( 'procReport ' + reportData.link + ' DONE' )
+				return Promise.resolve()
+			} )
 
-			getIdFromName( profileName )
-				.then( function ( res ) {
-					return getPostData( res.id, postId )
-				} )
-				.then( processPost )
-				.then( resolve )
-
-			// if ( commentId )
-			// 	getCommentData( postId, commentId )
-			// 		.then()
-		}
-		else {
-			reject( 'Link parsing failed: ' + reportData.link )
-		}
-	})
+		// if ( commentId )
+		// 	getCommentData( postId, commentId )
+		// 		.then()
+	}
+	else
+		return Promise.reject( 'Link parsing failed: ' + reportData.link )
 }
 
 function parseLink( link ) {
@@ -68,7 +67,7 @@ function getIdFromName( profileName ) {
 	} )
 }
 
-function getPostData( profileId, postId, callback ) {
+function getPostData( profileId, postId ) {
 
 	console.log( 'geting post id: ', profileId + '_' + postId );
 
@@ -92,7 +91,7 @@ function getPostData( profileId, postId, callback ) {
 
 }
 
-function getCommentData( postId, commentId, callback ) {
+function getCommentData( postId, commentId ) {
 
 	return new Promise( function ( resolve, reject ) {
 		FB.api(
@@ -123,5 +122,9 @@ function getCommentData( postId, commentId, callback ) {
 // comment 1798035663857332_1800640410263524
 // subcomment 1798035663857332_1802279196766312
 
+// Event 391045274586071
+
 // comment 1798035663857332_1800640410263524/?fields=attachment <-- medium pripojene ku komentu
 // 1661484914179075_1798035663857332/attachments <-- media pripojene k postu
+
+// type of object: ?metadata=1

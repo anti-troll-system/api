@@ -1,7 +1,7 @@
 let db = require( __dirname + '/dbDriver' )
 let utils = require( __dirname + '/utils' )
 let processLinks = require( __dirname + '/procLinks' )
-// let processProfiles = require( __dirname + '/procProfiles' )
+let processProfiles = require( __dirname + '/procProfiles' )
 
 module.exports = function ( data ) {
 
@@ -10,7 +10,7 @@ module.exports = function ( data ) {
 	let d = {}
 	let profiles = [
 		data.from.id,
-		data.admin_creator,
+		data.admin_creator && data.admin_creator.id
 	]
 
 	d._id = data.id
@@ -20,7 +20,7 @@ module.exports = function ( data ) {
 	d.time = data.created_time
 	d.time_processed = Date.now()
 	d.author_id = data.from.id
-	d.confirm_by = data.admin_creator
+	d.confirm_by = data.admin_creator && data.admin_creator.id
 	// d.reactions = data.reactions // edge /reactions
 	// d.link_id = data.link
 	// d.tags = data.message_tags
@@ -30,22 +30,38 @@ module.exports = function ( data ) {
 	d.shares = data.shares && data.shares.count || 0
 	d.place_id = data.place
 
-	Promise.all( [
+	return Promise.all( [
 
 		processLinks( utils.getLinksFromText( data.message ) )
-		// processProfiles(profiles)
 
-	] ).then( function ( results ) {
+	] )
+		.then( function ( results ) {
 
-		let linkIds = results[0]
+			let linkIds = results[ 0 ]
 
-		if ( linkIds )
-			d.links = linkIds;
+			if ( linkIds )
+				d.links = linkIds;
 
-		db.upsert( 'post', '_id', d ).then( function () {
-			console.log( 'finito', arguments )
-			process.exit()
+			profiles = profiles.filter( function ( p ) {
+				// filter falsy values
+				return p
+			} );
+
+			// console.log('profiles', profiles);
+
+			return Promise.all( [
+				processProfiles( profiles ),
+				savePost( d )
+			] )
+
 		} )
-	} )
+		.then( function () {
+			console.log( 'procPost ' + d._id + ' DONE' )
+			return Promise.resolve()
+		} )
+}
 
+function savePost( d ) {
+
+	return db.upsert( 'post', '_id', d )
 }

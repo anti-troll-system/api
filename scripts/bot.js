@@ -8,6 +8,11 @@ db.onConnection( function () {
 
 	loadTestReportToDb()
 		.then( processFirstUnprocessedLink )
+		.then( function () {
+			console.log( 'ALL DONE!!!' );
+			process.exit()
+		} )
+		.catch( handleError )
 
 } )
 
@@ -16,6 +21,11 @@ function loadTestReportToDb() {
 		link: 'https://www.facebook.com/vjednotejesila.sk/photos/a.1666881853639381.1073741828.1661484914179075/1798035663857332/?type=3&comment_id=1800640410263524&comment_tracking=%7B%22tn%22%3A%22R%22%7D',
 		ip_address: '123.124.125.126'
 	} )
+}
+
+function handleError( error ) {
+	console.error( 'error:', error );
+	process.exit( 1 )
 }
 
 function processFirstUnprocessedLink() {

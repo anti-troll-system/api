@@ -23,13 +23,9 @@ module.exports = mongoose.Schema( {
 		type: ObjectId,
 		ref: 'Link'
 	} ],
-	comments: [ {
-		type: String,
-		ref: 'Comment'
-	} ],
 	reactions: [ {
 		type: ObjectId,
-		ref: 'Reaction'
+		ref: 'Profile'
 	} ],
 	link: String,
 	link_name: String,

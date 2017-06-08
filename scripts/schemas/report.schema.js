@@ -6,8 +6,20 @@ module.exports = mongoose.Schema( {
 	processed: Date,
 	link: String,
 	ip_address: String,
-	reporter_id: ObjectId,
-	comment_id: ObjectId,
-	post_id: ObjectId,
-	author_id: ObjectId,
+	reporter_id: {
+		type: String,
+		ref: 'Profile'
+	},
+	comment_id: {
+		type: String,
+		ref: 'Comment'
+	},
+	post_id: {
+		type: String,
+		ref: 'Post'
+	},
+	author_id: {
+		type: String,
+		ref: 'Profile'
+	},
 } );

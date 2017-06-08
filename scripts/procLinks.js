@@ -1,17 +1,22 @@
+"use strict"
+
 let async = require( 'neo-async' )
 let db = require( __dirname + '/dbDriver' )
 
-var iterator = function ( link, done ) {
-	console.log( 'link is: ', link );
+let iterator = function ( link, done ) {
+
 	db.upsert( 'link', 'url', { url: link } ).then( function ( res ) {
-		console.log( 'dingdong link', arguments )
 		done( null, res._id )
 	} )
-};
+		.catch( done )
+}
 
 module.exports = function ( links ) {
+
 	return new Promise( function ( resolve, reject ) {
-		if ( links )
+
+		if ( links && links.length )
+
 			async.map( links, iterator, function ( err, res ) {
 				if ( err ) reject( err )
 				else
