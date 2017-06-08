@@ -1,7 +1,7 @@
 {
-  "name": "anti-troll-system-bot",
+  "name": "anti-troll-system-api",
   "version": "0.1.0",
-  "description": "bot for anti troll system",
+  "description": "api for anti troll system",
   "main": "bot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/anti-troll-system/bot.git"
+    "url": "git+https://github.com/anti-troll-system/api.git"
   },
   "keywords": [
     "anti",
@@ -20,9 +20,9 @@
   "author": "luckylooke@gmail.com",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/anti-troll-system/bot/issues"
+    "url": "https://github.com/anti-troll-system/api/issues"
   },
-  "homepage": "https://github.com/anti-troll-system/bot#readme",
+  "homepage": "https://github.com/anti-troll-system/api#readme",
   "dependencies": {
     "co": "^4.6.0",
     "fb": "^2.0.0",

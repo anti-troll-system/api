@@ -4,10 +4,10 @@
 
 ## Zásady správania sa
 
-Tento projekt dodržiava dohovor prispievateľa o [kódexe správania](https://github.com/anti-troll-system/bot/blob/master/dohovor_prispievatela.md). Zúčastňovaním sa na prispievaní, sa očakáva, že tento kódex budeš dodržovať. Ak sa stretneš s porušením tohto kódexu, prosím nahláste nám ho na adresu [info@vjednotejesila.sk](mailto:info@vjednotejesila.sk). Ďakujeme.
+Tento projekt dodržiava dohovor prispievateľa o [kódexe správania](https://github.com/anti-troll-system/api/blob/master/dohovor_prispievatela.md). Zúčastňovaním sa na prispievaní, sa očakáva, že tento kódex budeš dodržovať. Ak sa stretneš s porušením tohto kódexu, prosím nahláste nám ho na adresu [info@vjednotejesila.sk](mailto:info@vjednotejesila.sk). Ďakujeme.
 
 ## Ako môžem prispieť?
 
-- [Nahlásiť chybu](https://github.com/anti-troll-system/bot/issues)
-- [Navrhnúť vylepšenie](https://github.com/anti-troll-system/bot/issues)
-- [Pull Requests](https://github.com/anti-troll-system/bot/pulls)
+- [Nahlásiť chybu](https://github.com/anti-troll-system/api/issues)
+- [Navrhnúť vylepšenie](https://github.com/anti-troll-system/api/issues)
+- [Pull Requests](https://github.com/anti-troll-system/api/pulls)
