@@ -1,6 +1,14 @@
 let processPost = require( __dirname + '/procPost' )
 
 processPost( MOCK_RESPONSE() )
+	.then( function () {
+		console.log( 'MOCK_RESPONSE TEST DONE!!' );
+		process.exit()
+	} )
+	.catch( function ( err ) {
+		console.error( 'error', err )
+		process.exit( 1 )
+	} )
 
 
 function MOCK_RESPONSE() {
