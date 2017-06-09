@@ -6,7 +6,7 @@ let FB = require( 'fb' )
 let secrets = require( __dirname + '/../secrets' )
 let db = require( __dirname + '/../mongoose/driver' )
 let procLinks = require( __dirname + '/procLinks' )
-let utils = require( __dirname + '/utils' )
+let utils = require( __dirname + '/../utils' )
 
 FB.setAccessToken( secrets.access_token )
 

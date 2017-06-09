@@ -1,9 +1,10 @@
 "use strict";
 
-let secrets = require( __dirname + '/../secrets' )
 let FB = require( 'fb' )
 let async = require( 'neo-async' )
 
+let secrets = require( __dirname + '/../secrets' )
+let utils = require( __dirname + '/../utils' )
 let procPost = require( __dirname + '/procPost' )
 // let procComment = require( __dirname + '/procComment' )
 
@@ -11,7 +12,7 @@ FB.setAccessToken( secrets.access_token )
 
 module.exports = function ( reportData ) {
 
-	let parsedLink = parseLink( reportData.link )
+	let parsedLink = utils.parseLink( reportData.link )
 	// console.log( 'parsedLink', parsedLink )
 
 	return getIdFromName( parsedLink.profileName )
@@ -27,46 +28,6 @@ module.exports = function ( reportData ) {
 	// if ( parsedLink.commentId )
 	// 	getCommentData( postId, parsedLink.commentId )
 	// 		.then()
-}
-
-function parseLink( link ) {
-
-	// test
-	// link='https://www.facebook.com/vjednotejesila.sk/photos/a.1666881853639381.1073741828.1661484914179075/1798035663857332/?type=3&comment_id=1800640410263524&comment_tracking=%7B%22tn%22%3A%22R%22%7D'
-	// link='https://www.facebook.com/oskar.dobrovodsky/posts/1576314412427652?comment_id=1576870255705401&comment_tracking=%7B%22tn%22%3A%22R2%22%7D'
-
-	let parsedLink = link.match( /facebook\.com\/([^?]*)\?([^#]*)?/ )
-	let path = parsedLink[ 1 ].split( '/' )
-	let query = parsedLink[ 2 ].split( '&' )
-	let queryObj = {}
-	let len = query.length
-	let postId
-
-	for ( let i = 0; i < len; i++ ) {
-		let splited = query[ i ].split( '=' )
-		queryObj[ splited[ 0 ] ] = splited[ 1 ]
-	}
-
-	len = path.length
-
-	if ( path[ len - 1 ] )
-		postId = path[ len - 1 ]
-	else
-		postId = path[ len - 2 ]
-
-
-	// console.log( 'dingdong', {
-	// 	profileName: path[ 0 ],
-	// 	postId: postId,
-	// 	commentId: queryObj.comment_id,
-	// } );
-	// process.exit()
-
-	return {
-		profileName: path[ 0 ],
-		postId: postId,
-		commentId: queryObj.comment_id,
-	}
 }
 
 function getIdFromName( profileName ) {
