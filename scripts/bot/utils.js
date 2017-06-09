@@ -1,4 +1,3 @@
-
 let utils = {}
 
 // https://stackoverflow.com/a/9284473/861615
@@ -7,7 +6,9 @@ let utils = {}
 // http://blog.mattheworiordan.com/post/13174566389/url-regular-expression-for-links-with-or-without
 let urlRegex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=+$,\w]+@)?[A-Za-z0-9.\-]+|(?:www\.|[\-;:&=+$,\w]+@)[A-Za-z0-9.\-]+)((?:\/[+~%\/.\w\-_]*)?\??(?:[\-+=&;%@.\w_]*)#?(?:[.!\/\\\w]*))?)/gi
 
-utils.getLinksFromText = function( text ) {
+utils.getLinksFromText = function ( text ) {
+
+	if ( !text ) return null
 	return text.match( urlRegex )
 }
 

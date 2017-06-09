@@ -1,6 +1,6 @@
-let processPost = require( __dirname + '/procPost' )
+let procPost = require( __dirname + '/procPost' )
 
-processPost( MOCK_RESPONSE() )
+procPost( MOCK_RESPONSE() )
 	.then( function () {
 		console.log( 'MOCK_RESPONSE TEST DONE!!' );
 		process.exit()

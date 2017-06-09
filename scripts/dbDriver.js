@@ -23,7 +23,7 @@ let dbLayer = {
 
 	upsert: function ( model, key, data ) {
 
-		console.log( 'upsert', model, key, data && data._id )
+		console.log( 'upsert', model, key + ': ', data && data[key] )
 		return models[ model ].findOneAndUpdate( { [key]: data[ key ] }, data, {
 			upsert: true,
 			setDefaultsOnInsert: true

@@ -4,8 +4,8 @@ let secrets = require( __dirname + '/../../secrets' )
 let FB = require( 'fb' )
 let async = require( 'neo-async' )
 
-let processPost = require( __dirname + '/procPost' )
-// let processComment = require( __dirname + '/procComment' )
+let procPost = require( __dirname + '/procPost' )
+// let procComment = require( __dirname + '/procComment' )
 
 FB.setAccessToken( secrets.access_token )
 
@@ -24,9 +24,9 @@ module.exports = function ( reportData ) {
 			.then( function ( res ) {
 				return getPostData( res.id, postId )
 			} )
-			.then( processPost )
+			.then( procPost )
 			.then( function () {
-				console.log( 'procReport ' + reportData.link + ' DONE' )
+				console.log( 'report: ' + reportData.link + ' DONE' )
 				return Promise.resolve()
 			} )
 
@@ -47,7 +47,7 @@ function parseLink( link ) {
 	 * parsedLink[ 4 ] = commentId
 	 * */
 
-	return link.match( /www\.facebook\.com\/([\w\-.]*)\/.*\/([0-9]*)\/(\?.*comment_id=([0-9]*))?/ )
+	return link.match( /www\.facebook\.com\/([\w\-.]*)\/.*\/([0-9]*)(\?.*comment_id=([0-9]*))?/ )
 }
 
 function getIdFromName( profileName ) {
@@ -69,7 +69,7 @@ function getIdFromName( profileName ) {
 
 function getPostData( profileId, postId ) {
 
-	console.log( 'geting post id: ', profileId + '_' + postId );
+	console.log( 'fbk-api get post id: ', profileId + '_' + postId );
 
 	return new Promise( function ( resolve, reject ) {
 		FB.api(

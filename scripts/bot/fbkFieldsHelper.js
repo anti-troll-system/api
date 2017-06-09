@@ -465,7 +465,7 @@ function getPageFields() {
 		},
 		{
 			"name": "is_verified",
-			"description": "Pages with a large number of followers can be manually verified by Facebook as [having an authentic identity](https://www.facebook.com/help/196050490547892). This field indicates whether the page is verified by this process",
+			"description": "Pages with a large number of followers can be manually verified by Facebook as [having an authentic identity](https://www.facebook.com/help/196050490547892). This field indicates whether the page is verified by this proc",
 			"type": "bool"
 		},
 		{

@@ -1,11 +1,12 @@
 let db = require( __dirname + '/../dbDriver' )
 let utils = require( __dirname + '/utils' )
-let processLinks = require( __dirname + '/procLinks' )
-let processProfiles = require( __dirname + '/procProfiles' )
+let procLinks = require( __dirname + '/procLinks' )
+let procProfiles = require( __dirname + '/procProfiles' )
+let procComments = require( __dirname + '/procComments' )
 
 module.exports = function ( data ) {
 
-	console.log( 'procPost', data )
+	console.log( 'processing post:', data.id )
 
 	let d = {}
 	let profiles = [
@@ -32,7 +33,7 @@ module.exports = function ( data ) {
 
 	return Promise.all( [
 
-		processLinks( utils.getLinksFromText( data.message ) )
+		procLinks( utils.getLinksFromText( data.message ) )
 
 	] )
 		.then( function ( results ) {
@@ -50,13 +51,14 @@ module.exports = function ( data ) {
 			// console.log('profiles', profiles);
 
 			return Promise.all( [
-				processProfiles( profiles ),
+				procProfiles( profiles ),
+				procComments( d._id ),
 				savePost( d )
 			] )
 
 		} )
 		.then( function () {
-			console.log( 'procPost ' + d._id + ' DONE' )
+			console.log( 'post: ' + d._id + ' DONE' )
 			return Promise.resolve()
 		} )
 }

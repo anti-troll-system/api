@@ -5,7 +5,7 @@ let FB = require( 'fb' )
 
 let secrets = require( __dirname + '/../../secrets' )
 let db = require( __dirname + '/../dbDriver' )
-let processLinks = require( __dirname + '/procLinks' )
+let procLinks = require( __dirname + '/procLinks' )
 let utils = require( __dirname + '/utils' )
 
 FB.setAccessToken( secrets.access_token )
@@ -19,21 +19,23 @@ let fields = {
 
 let iterator = function ( profileId, done ) {
 
-	console.log( 'profileId', profileId );
+	console.log( 'processing profile:', profileId );
 
 	getProfileMetaData( profileId )
 		.then( getProfileData )
 		.then( mapFbkData )
 		.then( saveProfile )
 		.then( function ( res ) {
-			console.log( 'procProfile ' + res._id + ' DONE' )
+			console.log( 'profile: ' + res._id + ' DONE' )
 			done( null, res._id )
 			return Promise.resolve()
 		} )
 		.catch( done )
 }
 
-module.exports = function processProfiles( profiles ) {
+module.exports = function procProfiles( profiles ) {
+
+	console.log( 'profiles to process: ', profiles );
 
 	return new Promise( function ( resolve, reject ) {
 
@@ -51,7 +53,7 @@ module.exports = function processProfiles( profiles ) {
 
 function getProfileMetaData( profileId ) {
 
-	console.log( 'geting profile id: ', profileId );
+	console.log( 'fbk api get type profile: ', profileId );
 
 	return new Promise( function ( resolve, reject ) {
 
@@ -79,7 +81,7 @@ function getProfileMetaData( profileId ) {
 
 function getProfileData( profile ) {
 
-	console.log( 'geting profile data for: ', profile.id, profile.metadata.type );
+	console.log( 'fbk api get profile: ', profile.id, profile.metadata.type );
 
 	return new Promise( function ( resolve, reject ) {
 
@@ -91,7 +93,7 @@ function getProfileData( profile ) {
 			},
 			function ( res ) {
 
-				// 	console.log( 'API/' + profileId, arguments )
+				// console.log( arguments )
 				// 	process.exit()
 
 				if ( res.error )
@@ -108,7 +110,7 @@ function mapFbkData( data ) {
 
 	if ( !data ) return Promise.reject( new Error( 'Error mapFbkData - no data!' ) )
 
-	console.log( 'mapFbkData', data.id );
+	// console.log( 'mapFbkData', data.id );
 
 	let d = {}
 	d._id = data.id
@@ -121,7 +123,7 @@ function mapFbkData( data ) {
 	d.timezone = data.timezone || 0
 	d.picture = data.picture
 	d.user_name = data.name
-	d.description = '' + data.description + data.about + data.general_info + data.bio + data.company_overview + data.mission + data.personal_info + data.personal_interests
+	d.description = '' + (data.description || '') + (data.about || '') + (data.general_info || '') + (data.bio || '') + (data.company_overview || '') + (data.mission || '') + (data.personal_info || '') + (data.personal_interests || '')
 	// members (sum: admins + data.band_members, booking_agent, general_manager, directed_by, owner, /roles, /admins, /members) naviazanych profilov (entita Profile)
 	// comments (/comments)
 	// d.attending = data.attending
@@ -136,7 +138,7 @@ function mapFbkData( data ) {
 
 	return Promise.all( [
 
-		processLinks( utils.getLinksFromText( d.description ) )
+		procLinks( utils.getLinksFromText( d.description ) )
 
 	] )
 		.then( function ( results ) {
@@ -148,7 +150,9 @@ function mapFbkData( data ) {
 
 
 			// profiles = profiles.filter(function(p){return p}); // filter falsy values
-			// processProfiles( profiles )
+			// procProfiles( profiles )
+
+			// console.log( 'returns', d._id );
 
 			return Promise.resolve( d )
 		} )

@@ -2,21 +2,38 @@ let mongoose = require( 'mongoose' );
 let ObjectId = mongoose.Schema.ObjectId;
 
 module.exports = mongoose.Schema( {
-	fbk_id: String,
+	_id: String,
 	type: String,
 	message: String,
 	likes_sum: Number,
-	parent_id: ObjectId,
-	post_id: ObjectId,
+	parent_id: {
+		type: String,
+		ref: 'Post'
+	},
+	post_id: {
+		type: String,
+		ref: 'Post'
+	},
 	time: { type: Date, default: Date.now },
-	author_id: ObjectId,
-	links: [ ObjectId ],
-	replies: [ ObjectId ],
+	author_id: {
+		type: String,
+		ref: 'Profile'
+	},
+	links: [ {
+		type: ObjectId,
+		ref: 'Link'
+	} ],
 	replies_sum: Number,
-	reactions: [ ObjectId ],
-	link: String,
-	link_name: String,
-	link_description: String,
-	link_id: ObjectId,
-	tags: [ ObjectId ],
+	reactions: [ {
+		type: ObjectId,
+		ref: 'Reaction'
+	} ],
+	link: {
+		type: ObjectId,
+		ref: 'Link'
+	},
+	tags: [ {
+		type: ObjectId,
+		ref: 'Tag'
+	} ],
 } );

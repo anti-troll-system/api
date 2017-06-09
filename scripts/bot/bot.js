@@ -1,13 +1,13 @@
 "use strict"
 
 let db = require( __dirname + '/../dbDriver' )
-let processReport = require( __dirname + '/procReport' )
+let procReport = require( __dirname + '/procReport' )
 
 db.onConnection( function () {
 	// we're connected!
 
 	loadTestReportToDb()
-		.then( processFirstUnprocessedLink )
+		.then( procFirstUnprocessedLink )
 		.then( function () {
 			console.log( 'ALL DONE!!!' );
 			process.exit()
@@ -28,13 +28,13 @@ function handleError( error ) {
 	process.exit( 1 )
 }
 
-function processFirstUnprocessedLink() {
+function procFirstUnprocessedLink() {
 	return db.readOne( 'report', { processed: undefined } )
 		.then( handleReport )
 }
 
 function handleReport( report ) {
-	return processReport( report )
+	return procReport( report )
 		.then( function () {
 			report.processed = Date.now()
 			report.save()
