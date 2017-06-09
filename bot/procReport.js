@@ -1,6 +1,6 @@
 "use strict";
 
-let secrets = require( __dirname + '/../../secrets' )
+let secrets = require( __dirname + '/../secrets' )
 let FB = require( 'fb' )
 let async = require( 'neo-async' )
 
@@ -14,40 +14,59 @@ module.exports = function ( reportData ) {
 	let parsedLink = parseLink( reportData.link )
 	// console.log( 'parsedLink', parsedLink )
 
-	if ( parsedLink ) { // successfully parsed
+	return getIdFromName( parsedLink.profileName )
+		.then( function ( res ) {
+			return getPostData( res.id, parsedLink.postId )
+		} )
+		.then( procPost )
+		.then( function () {
+			console.log( 'report: ' + reportData.link + ' DONE' )
+			return Promise.resolve()
+		} )
 
-		let profileName = parsedLink[ 1 ]
-		let postId = parsedLink[ 2 ]
-		let commentId = parsedLink[ 4 ]
-
-		return getIdFromName( profileName )
-			.then( function ( res ) {
-				return getPostData( res.id, postId )
-			} )
-			.then( procPost )
-			.then( function () {
-				console.log( 'report: ' + reportData.link + ' DONE' )
-				return Promise.resolve()
-			} )
-
-		// if ( commentId )
-		// 	getCommentData( postId, commentId )
-		// 		.then()
-	}
-	else
-		return Promise.reject( 'Link parsing failed: ' + reportData.link )
+	// if ( parsedLink.commentId )
+	// 	getCommentData( postId, parsedLink.commentId )
+	// 		.then()
 }
 
 function parseLink( link ) {
 
-	/*
-	 * parsedLink[ 1 ] = profile (page,user...) name where post is situated
-	 * parsedLink[ 2 ] = postId
-	 * parsedLink[ 3 ] = NO DATA ( helper )
-	 * parsedLink[ 4 ] = commentId
-	 * */
+	// test
+	// link='https://www.facebook.com/vjednotejesila.sk/photos/a.1666881853639381.1073741828.1661484914179075/1798035663857332/?type=3&comment_id=1800640410263524&comment_tracking=%7B%22tn%22%3A%22R%22%7D'
+	// link='https://www.facebook.com/oskar.dobrovodsky/posts/1576314412427652?comment_id=1576870255705401&comment_tracking=%7B%22tn%22%3A%22R2%22%7D'
 
-	return link.match( /www\.facebook\.com\/([\w\-.]*)\/.*\/([0-9]*)(\?.*comment_id=([0-9]*))?/ )
+	let parsedLink = link.match( /facebook\.com\/([^?]*)\?([^#]*)?/ )
+	let path = parsedLink[ 1 ].split( '/' )
+	let query = parsedLink[ 2 ].split( '&' )
+	let queryObj = {}
+	let len = query.length
+	let postId
+
+	for ( let i = 0; i < len; i++ ) {
+		let splited = query[ i ].split( '=' )
+		queryObj[ splited[ 0 ] ] = splited[ 1 ]
+	}
+
+	len = path.length
+
+	if ( path[ len - 1 ] )
+		postId = path[ len - 1 ]
+	else
+		postId = path[ len - 2 ]
+
+
+	// console.log( 'dingdong', {
+	// 	profileName: path[ 0 ],
+	// 	postId: postId,
+	// 	commentId: queryObj.comment_id,
+	// } );
+	// process.exit()
+
+	return {
+		profileName: path[ 0 ],
+		postId: postId,
+		commentId: queryObj.comment_id,
+	}
 }
 
 function getIdFromName( profileName ) {
@@ -121,6 +140,7 @@ function getCommentData( postId, commentId ) {
 // video post 38050018641_10155304706238642
 // comment 1798035663857332_1800640410263524
 // subcomment 1798035663857332_1802279196766312
+// comment kiskovej photo 387389248048526_1329949463751380
 
 // Event 391045274586071
 
@@ -128,3 +148,17 @@ function getCommentData( postId, commentId ) {
 // 1661484914179075_1798035663857332/attachments <-- media pripojene k postu
 
 // type of object: ?metadata=1
+//
+// {
+// 	"name": "Jakub Lupták",
+// 	"id": "1016911229"
+// }
+
+// miso janis 10205591363215863
+
+// https://findmyfbid.com
+
+// nefunguje regexp:
+// https://www.facebook.com/oskar.dobrovodsky/posts/1576314412427652?comment_id=1576870255705401&comment_tracking=%7B%22tn%22%3A%22R2%22%7D
+// https://www.facebook.com/photo.php?fbid=10203463176832880&set=a.1490331691057.65923.1016911229&type=3&comment_id=10208225056916906&comment_tracking=%7B%22tn%22%3A%22R%22%7D
+// https://www.facebook.com/photo.php?fbid=10203463176832880&set=a.1490331691057.65923.1016911229&type=3&source=11&referrer_profile_id=1016911229&comment_id=10203478505496087&comment_tracking=%7B%22tn%22%3A%22R0%22%7D
