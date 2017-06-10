@@ -14,6 +14,10 @@ module.exports = mongoose.Schema( {
 		type: String,
 		ref: 'Post'
 	},
+	report_id: {
+		type: ObjectId,
+		ref: 'Report'
+	},
 	time: { type: Date, default: Date.now },
 	author_id: {
 		type: String,

@@ -1,6 +1,6 @@
 "use strict"
 
-let db = require( __dirname + '/../mongoose/driver' )
+let db = require( __dirname + '/../mongoose/mngDriver' )
 let procReport = require( __dirname + '/procReport' )
 
 db.onConnection( function () {

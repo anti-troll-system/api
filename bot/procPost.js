@@ -1,5 +1,5 @@
-let db = require( __dirname + '/../mongoose/driver' )
-let utils = require( __dirname + '/../utils' )
+let db = require( __dirname + '/../mongoose/mngDriver' )
+let utils = require( __dirname + '/../utils/utils' )
 let procLinks = require( __dirname + '/procLinks' )
 let procProfiles = require( __dirname + '/procProfiles' )
 let procComments = require( __dirname + '/procComments' )

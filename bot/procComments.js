@@ -1,80 +1,45 @@
 "use strict"
 
-let FB = require( 'fb' )
-
-let secrets = require( __dirname + '/../secrets' )
-let db = require( __dirname + '/../mongoose/driver' )
+let db = require( __dirname + '/../mongoose/mngDriver' )
+let fbk = require( __dirname + '/../nets/fbkDriver' )
 let procLinks = require( __dirname + '/procLinks' )
 let procProfiles = require( __dirname + '/procProfiles' )
-let utils = require( __dirname + '/../utils' )
-
-FB.setAccessToken( secrets.access_token )
+let utils = require( __dirname + '/../utils/utils' )
 
 module.exports = function procComments( postId ) {
 
 	console.log( 'processing comments for post: ', postId );
 
-	return getCommentsData( postId )
-		.then( mapFbkData )
+	return fbk.getCommentsData( postId )
+		.then( mapCommentsFbkData )
 		.then( function () {
 			console.log( 'comments for post: ' + postId + ' DONE' )
 			return Promise.resolve()
 		} )
 }
 
-function getCommentsData( postId, cursor, subcomments ) {
-
-	console.log( 'api fbk get bulk of comments data for: ', postId, cursor, subcomments );
-
-	return new Promise( function ( resolve, reject ) {
-
-		FB.api(
-			'/' + ( subcomments ? subcomments : postId ) + '/comments',
-			'GET',
-			{
-				fields: "id, message, like_count, parent, _post_id, created_time, from, comment_count, attachment, message_tags, comments {id}",
-				after: cursor || 0
-			},
-			function ( res ) {
-
-				// 	console.log( 'API/' + profileId, arguments )
-				// 	process.exit()
-
-				res._post_id = postId
-				res._subcomments = subcomments
-
-				if ( res.error )
-					reject( res.error )
-				else
-					resolve( res )
-			}
-		)
-	} )
-
-}
-
-function mapFbkData( commentsData ) {
+function mapCommentsFbkData( commentsData ) {
 
 	let promises = []
 	let data = commentsData.data
 	let len = data.length
 
 	for ( let i = 0; i < len; i++ ) {
-		promises.push( mapFbkDataOne( data[ i ] ) )
+		promises.push( mapCommentFbkData( data[ i ] ) )
 	}
 
 	if ( data.paging && data.paging.next )
-		promises.push( getCommentsData( commentsData._post_id, data.paging.cursor.after, commentsData._subcomments )
-			.then( mapFbkData ) )
+		promises.push( fbk.getCommentsData( commentsData._post_id, data.paging.cursor.after, commentsData._subcomments )
+			.then( mapCommentsFbkData ) )
 
 	return Promise.all( promises )
 }
 
-function mapFbkDataOne( data ) {
+function mapCommentFbkData( data ) {
 
-	if ( !data ) return Promise.reject( new Error( 'Error mapFbkData - no data!' ) )
+	if ( !data ) return Promise.reject( new Error( 'Error mapCommentsFbkData - no data!' ) )
 
-	// console.log( 'mapFbkData', data.id );
+	// console.log( 'mapCommentsFbkData', data.id );
 
 	let d = {}
 	d._id = data.id
@@ -110,8 +75,8 @@ function mapFbkDataOne( data ) {
 			]
 
 			if ( data.comments )
-				promises.push( getCommentsData( data._post_id, data.paging && data.paging.cursor.after, data.id )
-					.then( mapFbkData ) )
+				promises.push( fbk.getCommentsData( data._post_id, data.paging && data.paging.cursor.after, data.id )
+					.then( mapCommentsFbkData ) )
 
 			return Promise.all( promises )
 				.then( function () {

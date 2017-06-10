@@ -1,7 +1,7 @@
 "use strict"
 
 let async = require( 'neo-async' )
-let db = require( __dirname + '/../mongoose/driver' )
+let db = require( __dirname + '/../mongoose/mngDriver' )
 
 let iterator = function ( link, done ) {
 

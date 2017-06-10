@@ -1,29 +1,19 @@
 "use strict"
 
 let async = require( 'neo-async' )
-let FB = require( 'fb' )
 
-let secrets = require( __dirname + '/../secrets' )
-let db = require( __dirname + '/../mongoose/driver' )
+let db = require( __dirname + '/../mongoose/mngDriver' )
+let fbk = require( __dirname + '/../nets/fbkDriver' )
 let procLinks = require( __dirname + '/procLinks' )
-let utils = require( __dirname + '/../utils' )
-
-FB.setAccessToken( secrets.access_token )
-
-// NOTE: can be used /scripts/fbkFieldsHelper.js
-let fields = {
-	event: 'id, description, name, timezone',
-	page: 'id, about, bio, company_overview, description, fan_count, general_info, is_verified, link, location, mission, name, parent_page, personal_info, personal_interests',
-	group: 'id, description, link, name',
-}
+let utils = require( __dirname + '/../utils/utils' )
 
 let iterator = function ( profileId, done ) {
 
 	console.log( 'processing profile:', profileId );
 
-	getProfileMetaData( profileId )
-		.then( getProfileData )
-		.then( mapFbkData )
+	fbk.getProfileMetaData( profileId )
+		.then( fbk.getProfileData )
+		.then( mapProfileFbkData )
 		.then( saveProfile )
 		.then( function ( res ) {
 			console.log( 'profile: ' + res._id + ' DONE' )
@@ -51,66 +41,11 @@ module.exports = function procProfiles( profiles ) {
 	} )
 }
 
-function getProfileMetaData( profileId ) {
+function mapProfileFbkData( data ) {
 
-	console.log( 'fbk api get type profile: ', profileId );
+	if ( !data ) return Promise.reject( new Error( 'Error mapProfileFbkData - no data!' ) )
 
-	return new Promise( function ( resolve, reject ) {
-
-		FB.api(
-			'/' + profileId,
-			'GET',
-			{
-				fields: 'id',
-				metadata: true
-			},
-			function ( res ) {
-
-				// 	console.log( 'API/' + profileId, arguments )
-				// 	process.exit()
-
-				if ( res.error )
-					reject( res.error )
-				else
-					resolve( res )
-			}
-		)
-	} )
-
-}
-
-function getProfileData( profile ) {
-
-	console.log( 'fbk api get profile: ', profile.id, profile.metadata.type );
-
-	return new Promise( function ( resolve, reject ) {
-
-		FB.api(
-			'/' + profile.id,
-			'GET',
-			{
-				fields: fields[ profile.metadata.type ]
-			},
-			function ( res ) {
-
-				// console.log( arguments )
-				// 	process.exit()
-
-				if ( res.error )
-					reject( res.error )
-				else
-					resolve( res )
-			}
-		)
-	} )
-
-}
-
-function mapFbkData( data ) {
-
-	if ( !data ) return Promise.reject( new Error( 'Error mapFbkData - no data!' ) )
-
-	// console.log( 'mapFbkData', data.id );
+	// console.log( 'mapProfileFbkData', data.id );
 
 	let d = {}
 	d._id = data.id
