@@ -9,6 +9,7 @@ FB.setAccessToken( secrets.access_token )
 
 // NOTE: can be used /utils/fbkFieldsHelper.js
 let fields = {
+	default: 'id, name, picture, link',
 	event: 'id, description, name, timezone',
 	page: 'id, about, bio, company_overview, description, fan_count, general_info, is_verified, link, location, mission, name, parent_page, personal_info, personal_interests',
 	group: 'id, description, link, name',
@@ -16,11 +17,13 @@ let fields = {
 
 driver.getCommentData = function ( postId, commentId ) {
 
+	console.log( 'api fbk get comment data for: ', postId + '_' + commentId );
+
 	return new Promise( function ( resolve, reject ) {
 		FB.api(
 			'/' + postId + '_' + commentId,
 			'GET',
-			{ fields: "id, message, from" },
+			{ fields: "id, message, like_count, parent, created_time, from, comment_count, attachment, message_tags" },
 			function ( res ) {
 				if ( res.error )
 					reject( res.error )
@@ -41,7 +44,7 @@ driver.getCommentsData = function ( postId, cursor, subcomments ) {
 			'/' + ( subcomments ? subcomments : postId ) + '/comments',
 			'GET',
 			{
-				fields: "id, message, like_count, parent, _post_id, created_time, from, comment_count, attachment, message_tags, comments {id}",
+				fields: "id, message, like_count, parent, created_time, from, comment_count, attachment, message_tags",
 				after: cursor || 0
 			},
 			function ( res ) {
@@ -105,6 +108,9 @@ driver.getIdFromName = function ( profileName ) {
 
 driver.getProfileData = function ( profile ) {
 
+	if ( !profile.metadata )
+		profile.metadata = {}
+
 	console.log( 'fbk api get profile: ', profile.id, profile.metadata.type );
 
 	return new Promise( function ( resolve, reject ) {
@@ -113,7 +119,7 @@ driver.getProfileData = function ( profile ) {
 			'/' + profile.id,
 			'GET',
 			{
-				fields: fields[ profile.metadata.type ]
+				fields: fields[ profile.metadata.type || 'default' ]
 			},
 			function ( res ) {
 

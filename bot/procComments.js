@@ -74,8 +74,8 @@ function mapCommentFbkData( data ) {
 				procProfiles( [ data.from.id ] )
 			]
 
-			if ( data.comments )
-				promises.push( fbk.getCommentsData( data._post_id, data.paging && data.paging.cursor.after, data.id )
+			if ( data.comment_count )
+				promises.push( fbk.getCommentsData( data._post_id, null, data.id )
 					.then( mapCommentsFbkData ) )
 
 			return Promise.all( promises )

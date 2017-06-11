@@ -1,7 +1,7 @@
 let express = require( 'express' )
 let router = express.Router()              // get an instance of the express Router
 
-let utils = require( __dirname + '/../utils' )
+let utils = require( __dirname + '/../utils/utils' )
 let db = require( __dirname + '/../mongoose/mngDriver.js' )
 let fbk = require( __dirname + '/../nets/fbkDriver.js' )
 
@@ -19,7 +19,7 @@ router.post( '/verify', function ( req, res ) {
 
 	let url = req.body.url
 
-	if ( !url || utils.isUrl( url ) )
+	if ( !url || !utils.isUrl( url ) )
 		return res.status( 400 )
 			.json( { "error": { "code": 2, "message": "Missing parameter `url` or has not valid URL format." } } )
 
@@ -30,50 +30,68 @@ router.post( '/verify', function ( req, res ) {
 		return res.status( 400 )
 			.json( { "error": { "code": 4, "message": "Given URL has not valid form." } } )
 
-	// db.create( 'report', {
-	// 	link: url
-	// } )
-	// 	.then( function () {
-	//
-	// 		if ( parsedLink.commentId )
-	//
-	// 			return fbk.getCommentData( postId, parsedLink.commentId )
-	//
-	// 		else
-	// 			return fbk.getIdFromName( parsedLink.profileName )
-	// 				.then( function ( res ) {
-	// 					return fbk.getPostData( res.id, parsedLink.postId )
-	// 				} )
-	// 	} )
-
-
-	res.status( 200 )
-		.json( {
-				"reporter": {
-					"publicUserId": "facebook/jozko.mrkvicka",
-					"name": "Jožko Mrkvička",
-					"picture": "https://patroll.org/123456.png",
-					"profileLink": "https://patroll.org/facebook/jozko.mrkvicka"
-				},
-				"reported": {
-					"url": url,
-					"author": {
-						"publicUserId": "facebook/arian18",
-						"name": "White Pride",
-						"picture": "https://patroll.org/654321.png",
-						"profileLink": "https://patroll.org/whiteľľľ",
-						"location": "Sillicon Valley",
-						"reportedCount": 19,
-						"reportedByCount": 4,
-						"contributionCount": 40
-					},
-					"inappropriateContent": {
-						"contributionType": "comment",
-						"message": "Lorem ipsum HATE HATE HATE"
-					}
-				}
+	let responseData = {
+		"reporter": {
+			"publicUserId": "facebook/jozko.mrkvicka",
+			"name": "Jožko Mrkvička",
+			"picture": "https://patroll.org/123456.png",
+			"profileLink": "https://patroll.org/facebook/jozko.mrkvicka"
+		},
+		"reported": {
+			"url": url,
+			"author": {},
+			"content": {},
+			"inappropriateContent": {
+				"contributionType": "comment",
+				"message": "Lorem ipsum HATE HATE HATE"
 			}
-		)
+		}
+	};
+
+	( function () {
+
+		if ( parsedLink.commentId )
+
+			return fbk.getCommentData( parsedLink.postId, parsedLink.commentId )
+
+		else
+
+			return fbk.getIdFromName( parsedLink.profileName )
+				.then( function ( res ) {
+					return fbk.getPostData( res.id, parsedLink.postId )
+				} )
+	}() )
+		.then( function ( postOrCommentData ) {
+
+			let content = responseData.reported.content
+
+			content.id = postOrCommentData.id
+			content.message = postOrCommentData.message
+			content.date = postOrCommentData.created_time
+			content.type = parsedLink.commentId ? 'comment' : 'post'
+
+			return fbk.getProfileData( postOrCommentData.from )
+		} )
+		.then( function ( profileData ) {
+
+			let author = responseData.reported.author
+
+			author.publicUserId = profileData.id
+			author.name = profileData.name
+			author.picture = profileData.picture.url
+			author.profileLink = profileData.link
+
+			console.log( 'dingdong', responseData );
+
+			res.status( 200 )
+				.json( responseData )
+		} )
+		.catch( function ( err ) {
+			console.error( 'error: ', err );
+			res.status( 500 )
+				.send( err )
+		} )
+
 } )
 
 router.post( '/report', function ( req, res ) {
