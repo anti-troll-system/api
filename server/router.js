@@ -41,10 +41,7 @@ router.post( '/verify', function ( req, res ) {
 			"url": url,
 			"author": {},
 			"content": {},
-			"inappropriateContent": {
-				"contributionType": "comment",
-				"message": "Lorem ipsum HATE HATE HATE"
-			}
+			"inappropriateContent": {}
 		}
 	};
 
@@ -63,12 +60,12 @@ router.post( '/verify', function ( req, res ) {
 	}() )
 		.then( function ( postOrCommentData ) {
 
-			let content = responseData.reported.content
+			let inapContent = responseData.reported.inappropriateContent
 
-			content.id = postOrCommentData.id
-			content.message = postOrCommentData.message
-			content.date = postOrCommentData.created_time
-			content.type = parsedLink.commentId ? 'comment' : 'post'
+			inapContent.id = postOrCommentData.id
+			inapContent.message = postOrCommentData.message
+			inapContent.date = postOrCommentData.created_time
+			inapContent.contributionType = parsedLink.commentId ? 'comment' : 'post'
 
 			return fbk.getProfileData( postOrCommentData.from )
 		} )
