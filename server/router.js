@@ -93,7 +93,33 @@ router.post( '/verify', function ( req, res ) {
 
 router.post( '/report', function ( req, res ) {
 
-	res.status( 201 )
+	let url = req.body.url
+
+	if ( !url || !utils.isUrl( url ) )
+		return res.status( 400 )
+			.json( { "error": { "code": 2, "message": "Missing parameter `url` or has not valid URL format." } } )
+
+	let parsedLink = url ? utils.parseLink( url ) : null;
+
+
+	if ( !parsedLink || !parsedLink.postId || !parsedLink.profileName )
+		return res.status( 400 )
+			.json( { "error": { "code": 4, "message": "Given URL has not valid form." } } )
+
+	db.create( 'report', {
+		link: url
+	} )
+		.then( function () {
+
+			res.status( 201 )
+				.send()
+		} )
+		.catch( function ( err ) {
+			console.error( 'error: ', err );
+			res.status( 500 )
+				.send( err )
+		} )
+
 } )
 
 router.get( '/search', function ( req, res ) {
