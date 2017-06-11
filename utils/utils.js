@@ -19,7 +19,7 @@ utils.isUrl = function ( url ) {
 	return url.match( urlOnlyRegex )
 }
 
-utils.parseLink = function( link ) {
+utils.parseLink = function ( link ) {
 
 	// test
 	// link='https://www.facebook.com/vjednotejesila.sk/photos/a.1666881853639381.1073741828.1661484914179075/1798035663857332/?type=3&comment_id=1800640410263524&comment_tracking=%7B%22tn%22%3A%22R%22%7D'
@@ -57,6 +57,15 @@ utils.parseLink = function( link ) {
 		postId: postId,
 		commentId: queryObj.comment_id,
 	}
+}
+
+utils.randomValueFromArray = function ( array ) {
+
+	return array[ Math.floor( Math.random() * array.length ) ];
+}
+
+utils.getRandomInt = function ( min, max ) {
+	return Math.floor( Math.random() * (max - min + 1) ) + min;
 }
 
 module.exports = utils
