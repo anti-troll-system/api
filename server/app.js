@@ -22,6 +22,11 @@ app.use('/', router);
 
 app.listen(3000);
 
+// // IMPORTANT 1:
+// app.listen(+process.argv[2]);
+//
+// // IMPORTANT 2 (`total` word has to be in the process title):
+// process.title = 'total: express';
 
 // catch 404 and forward to error handler
 app.use( function ( req, res, next ) {

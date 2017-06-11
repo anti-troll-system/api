@@ -58,3 +58,5 @@ tmp/*
 /db/
 /secrets.js
 /server/node_modules/
+/index.js
+/env.js
