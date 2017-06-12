@@ -2,7 +2,7 @@
   "name": "anti-troll-system-api",
   "version": "0.1.0",
   "description": "api for anti troll system",
-  "main": "bot.js",
+  "main": "bot/bot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "mongo:dev": "mongod --dbpath ./db"
@@ -15,9 +15,10 @@
     "anti",
     "troll",
     "system",
-    "api"
+    "api",
+    "bot"
   ],
-  "author": "luckylooke@gmail.com",
+  "author": "Slovenskí vývojári",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/anti-troll-system/api/issues"
